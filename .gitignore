@@ -1,0 +1,9 @@
+# Style labels and anything else that reveals answers (D16)
+content/private/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+.DS_Store
