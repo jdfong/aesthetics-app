@@ -14,7 +14,7 @@ so it runs alongside phases 2–3 rather than after them.
 | 3. Swipe UI | Card stack, gestures + buttons, photo carousel, profile sheet, rewind, event queue | Nov 3 – 5 |
 | 4. Content | Manifest → fetch → process → seed for 40 images; credits screen. Author picks images from Oct 30 | Manifest by Nov 5; seeded by Nov 7 |
 | 5. Experience pass | Match moments, end-of-deck/results based on per-user history | Nov 8 – 10 |
-| 6. Hardening | Real-device testing (iOS Safari, Android Chrome), slow-network test, rate limit, QR code | Nov 11 – 12 |
+| 6. Hardening | Real-device testing (iOS Safari, Android Chrome), slow-network test, rate limit, QR code. Raise Supabase's anonymous sign-ins per IP limit (Authentication → Rate Limits), since venue wifi may put everyone behind one IP | Nov 11 – 12 |
 | Freeze | Only fixes from here on | Nov 13 |
 | Done | Live and ready to share | Nov 14 |
 
