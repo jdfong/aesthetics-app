@@ -3,7 +3,15 @@
 A satirical swipe-to-match app where the profiles are buildings. You swipe on architecture
 the way you'd swipe on people. Built for a housing conference, mobile web only.
 
-This repo is in the **planning phase**. There is no implementation code yet, by design.
+Status: **phase 1 (skeleton)**. See the build plan in `docs/05-plan-and-open-questions.md`.
+
+## Running locally
+
+1. `npm install`
+2. `cp .env.example .env.local` and fill in the Supabase values (see comments in the file).
+3. `npm run dev`, then open http://localhost:3000.
+
+The same environment variables must be set in the Vercel project settings.
 
 ## Planning docs
 
