@@ -1,18 +1,10 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { requireEnv } from "./env";
 
-// The browser never talks to Supabase directly (D13). Every Supabase call goes
-// through this server-side client, which keeps the auth session in cookies.
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable ${name}. See .env.example.`);
-  }
-  return value;
-}
-
+// The browser never talks to Supabase directly (D13). Auth calls go through
+// this server-side client, which keeps the session in cookies.
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
@@ -32,4 +24,11 @@ export async function createSupabaseServerClient() {
       },
     },
   );
+}
+
+// The signed-in user's id from the session cookie, or null.
+export async function getCurrentUserId(): Promise<string | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getClaims();
+  return data?.claims.sub ?? null;
 }
