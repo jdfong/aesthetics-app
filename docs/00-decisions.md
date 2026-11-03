@@ -23,3 +23,10 @@ Status key: **Decided** = the user said so. **Proposed** = recommended, waiting 
 | D16 | Style labels aren't kept in the public repo | Decided | Manifest with labels lives in gitignored `content/private/`; it only reaches the database through the seed step (see 04) |
 | D17 | Git author email for this repo is the GitHub no-reply address `31712126+jdfong@users.noreply.github.com` | Decided | Set in repo-local git config; global config untouched |
 | D18 | Everything is done by **Fri Nov 14, 2026** | Decided | Schedule in 05 |
+| D19 | The experience parodies dating-app layout and conventions closely, screen by screen | Decided | Full spec in 06 |
+| D20 | Fake onboarding with joke answers ("I am a…", "Looking for…"); nothing personal collected | Decided | Answers logged as events for later comparisons |
+| D21 | Each person gets 20 of the 40 buildings, stable per person | Decided | **Proposed addition:** balance the 20 across the 8 types (2–3 each), so every reveal has something to say. Uses labels on the server only |
+| D22 | Matches exist; the server decides them and each card says whether liking it matches | Decided | The rule itself is open (X1 in 06) |
+| D23 | Buildings reply after a match; no free chat between people | Decided | Reply format open (X2 in 06) |
+| D24 | The deck ends with a reveal of the person's type | Decided | Contents open (X3 in 06) |
+| D25 | No upsell / paywall jokes | Decided | Cut |

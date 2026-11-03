@@ -96,3 +96,19 @@ speed, it gets rebuilt from `events`, never edited by hand.
 - `events (user_id, server_ts)` for per-user history and experiences
 - `events (item_id, type)` for per-building aggregates
 - unique `events (id)` for idempotency
+
+## Checked against the experience (docs/06)
+
+No table changes are needed. Each part of the experience maps onto what's here:
+
+| Experience | Where it lives |
+| --- | --- |
+| Onboarding answers | `events` (`onboarding_step`, `onboarding_completed`). "Has this user onboarded?" is derived from the log |
+| 20-of-40 deck, stable per person | `decks.config` (`{"size": 20, "order": "shuffle", "balance_by": "style"}`) plus server logic |
+| Match outcome | Decided on the server, sent as a flag on each card. Rule inputs (e.g. a per-building `pickiness`) go in `item_attributes` |
+| Building replies | Per-building content: in `items.profile` if shown publicly, or `item_attributes` if it must stay hidden until a match |
+| Reveal | Derived: the user's swipes from `events` joined with `item_attributes.style` |
+
+Code changes this implies before phase 2 merges: `/api/session` reports whether the user
+has onboarded; cards carry a `matchOnLike` flag (stand-in rule until X1 is decided);
+the deck honours `size` and optional `balance_by`.

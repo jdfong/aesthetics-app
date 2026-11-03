@@ -32,4 +32,4 @@ content is the minimum.
 | Q5 | App name and visual identity (D10): any ideas? | Phase 3 polish, not the build |
 | Q6 | ~~Git author email~~ Resolved: GitHub no-reply address (D17) | — |
 | Q7 | OK with Vercel + Supabase free tiers, i.e. third-party hosting with no cost? | Phase 1 |
-| Q8 | Rough idea of what the end-of-deck experience is: results, reveal of styles, comparison to the room? Not needed now, but helps pick the first derived queries | Phase 5 |
+| Q8 | ~~End-of-deck experience~~ Resolved: a reveal of the person's type (D24); details tracked as X1–X3 in 06 | — |

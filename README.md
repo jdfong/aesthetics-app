@@ -23,3 +23,4 @@ The same environment variables must be set in the Vercel project settings.
 | [docs/03-data-model.md](docs/03-data-model.md) | Tables and the interaction event log |
 | [docs/04-content.md](docs/04-content.md) | Sourcing images from Wikimedia Commons, licensing, attribution |
 | [docs/05-plan-and-open-questions.md](docs/05-plan-and-open-questions.md) | Build phases, timeline, open questions |
+| [docs/06-experience.md](docs/06-experience.md) | Screen-by-screen product experience and what each screen logs |
