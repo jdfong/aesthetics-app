@@ -3,13 +3,19 @@
 A satirical swipe-to-match app where the profiles are buildings. You swipe on architecture
 the way you'd swipe on people. Built for a housing conference, mobile web only.
 
-Status: **phase 1 (skeleton)**. See the build plan in `docs/05-plan-and-open-questions.md`.
+Status: **phase 3 (swipe UI)**. See the build plan in `docs/05-plan-and-open-questions.md`.
 
 ## Running locally
 
 1. `npm install`
 2. `cp .env.example .env.local` and fill in the Supabase values (see comments in the file).
 3. `npm run dev`, then open http://localhost:3000.
+
+By default the phone UI uses a fake 20-card deck (`src/lib/client/mock-source.ts`) and prints
+events to the browser console, so it runs without the database. Set
+`NEXT_PUBLIC_DATA_SOURCE=api` to use the real endpoints instead.
+
+Tests: `npm test`.
 
 The same environment variables must be set in the Vercel project settings.
 

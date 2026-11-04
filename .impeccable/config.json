@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/components/match-overlay.tsx"
+        ],
+        "createdAt": "2026-11-04T00:54:12.449Z",
+        "reason": "Intentional parody of the dating-app match screen headline, per docs/06 and D19 (user asked for it to be comically like the dating app)"
+      }
+    ]
+  }
+}
