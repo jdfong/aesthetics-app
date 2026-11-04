@@ -7,7 +7,7 @@ Status key: **Decided** = the user said so. **Proposed** = recommended, waiting 
 | --- | --- | --- | --- |
 | D1 | It's a satirical swipe app with buildings as profiles, a joke and conversation piece for a housing conference | Decided | Not meant to be methodologically sound research |
 | D2 | Mobile web only, no App Store | Decided | Must work well in iOS Safari and Android Chrome |
-| D3 | Repo lives at `~/Desktop/aesthetics-app`, public, on personal GitHub (`jdfong`) | Decided | Nothing pushed until the user says so |
+| D3 | Repo lives at `~/code/aesthetics-app`, public, on personal GitHub (`jdfong`) | Decided | Moved off `~/Desktop` on Nov 3 because iCloud Desktop sync made builds take minutes. Keep it out of iCloud-synced folders |
 | D4 | There's a backend that logs every interaction per user and can serve per-user experiences based on that history | Decided | Exact interactions not settled, so the design has to stay generic (see 02, 03) |
 | D5 | Architecture must not rule out future features | Decided | Applied through the extensibility rules in 02 |
 | D6 | 40 images across 8 architecture types to start | Decided | Schema doesn't assume these numbers |
