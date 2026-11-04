@@ -60,7 +60,7 @@ const photos = [
 ] as unknown as PhotoRow[];
 
 describe("toCard", () => {
-  const card = toCard(item, photos, "https://example.supabase.co");
+  const card = toCard(item, photos, "https://example.supabase.co", true);
   const json = JSON.stringify(card);
 
   it("never contains a hidden attribute value", () => {
@@ -74,7 +74,7 @@ describe("toCard", () => {
   });
 
   it("has exactly the public top-level fields", () => {
-    expect(Object.keys(card).sort()).toEqual(["id", "photos", "profile", "version"]);
+    expect(Object.keys(card).sort()).toEqual(["id", "matchOnLike", "photos", "profile", "version"]);
     for (const p of card.photos) {
       expect(Object.keys(p).sort()).toEqual(["alt", "height", "id", "url", "width"]);
     }

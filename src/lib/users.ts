@@ -15,7 +15,14 @@ export async function ensureUserRow(userId: string, isAnonymous: boolean) {
 export type ActiveDeck = {
   id: string;
   version: number;
-  config: { item_ids?: string[]; order?: "shuffle" | "fixed" };
+  config: {
+    item_ids?: string[];
+    order?: "shuffle" | "fixed";
+    // Cards per person (D21), e.g. 20 of 40. Omitted means the whole deck.
+    size?: number;
+    // Hidden attribute key to balance each person's cards across, e.g. "style".
+    balance_by?: string;
+  };
 };
 
 export async function getActiveDeck(): Promise<ActiveDeck | null> {

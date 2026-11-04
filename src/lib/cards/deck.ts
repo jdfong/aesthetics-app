@@ -2,12 +2,53 @@ import { createHash } from "node:crypto";
 
 export type DeckOrder = "shuffle" | "fixed";
 
+// A number in [0, 1) that's stable for the same inputs. Used for per-user
+// shuffles and stand-in rules, so reloading never changes what someone sees.
+export function stableRandom(...parts: string[]): number {
+  const hex = createHash("sha256").update(parts.join(":")).digest("hex").slice(0, 12);
+  return parseInt(hex, 16) / 2 ** 48;
+}
+
 // Shuffled decks use a stable per-user order, so reloading the page doesn't
 // reshuffle what someone has left to swipe.
 export function orderDeck(itemIds: string[], userId: string, order: DeckOrder): string[] {
   if (order === "fixed") return [...itemIds];
-  const rank = (id: string) => createHash("sha256").update(`${userId}:${id}`).digest("hex");
-  return [...itemIds].sort((a, b) => (rank(a) < rank(b) ? -1 : 1));
+  return [...itemIds].sort((a, b) => stableRandom(userId, a) - stableRandom(userId, b));
+}
+
+// Picks this user's `size` items out of the deck (D21). With `groups` (item id →
+// hidden label, e.g. style), picks round-robin across labels so every label
+// gets an even share; items without a label form their own group. The labels
+// only steer selection here on the server and never leave it.
+export function selectForUser(
+  itemIds: string[],
+  userId: string,
+  size: number | undefined,
+  groups?: Map<string, string>,
+): string[] {
+  if (!size || size >= itemIds.length) return [...itemIds];
+  const shuffled = orderDeck(itemIds, userId, "shuffle");
+  if (!groups) return shuffled.slice(0, size);
+
+  const byGroup = new Map<string, string[]>();
+  for (const id of shuffled) {
+    const g = groups.get(id) ?? "";
+    byGroup.set(g, [...(byGroup.get(g) ?? []), id]);
+  }
+  // Which groups get the extra picks when size doesn't divide evenly also
+  // varies per user.
+  const queues = [...byGroup.entries()]
+    .sort(([a], [b]) => stableRandom(userId, "group", a) - stableRandom(userId, "group", b))
+    .map(([, ids]) => ids);
+
+  const picked: string[] = [];
+  while (picked.length < size) {
+    for (const q of queues) {
+      const next = q.shift();
+      if (next && picked.length < size) picked.push(next);
+    }
+  }
+  return picked;
 }
 
 export type SwipeLogEntry = {
@@ -42,4 +83,12 @@ export function nextItemIds(
   n: number,
 ): string[] {
   return ordered.filter((id) => !swiped.has(id) && !exclude.has(id)).slice(0, n);
+}
+
+// Stand-in match rule until the real one is designed (X1 in docs/06): each
+// building has a hidden `pickiness` in [0, 1] (default 0.5) and matches a
+// given user with probability 1 - pickiness, decided once per user and item.
+export function matchesOnLike(userId: string, itemId: string, pickiness: number | undefined): boolean {
+  const p = Number.isFinite(pickiness) ? Math.min(Math.max(pickiness as number, 0), 1) : 0.5;
+  return stableRandom(userId, itemId, "match") >= p;
 }

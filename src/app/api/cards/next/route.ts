@@ -3,15 +3,25 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireEnv } from "@/lib/supabase/env";
 import { getActiveDeck } from "@/lib/users";
 import { toCard, type ItemRow, type PhotoRow } from "@/lib/cards/card";
-import { nextItemIds, orderDeck, swipedItemIds, type SwipeLogEntry } from "@/lib/cards/deck";
+import {
+  matchesOnLike,
+  nextItemIds,
+  orderDeck,
+  selectForUser,
+  swipedItemIds,
+  type SwipeLogEntry,
+} from "@/lib/cards/deck";
 
 const noStore = { "Cache-Control": "no-store" };
 const MAX_N = 10;
 
+type AttributeRow = { item_id: string; key: string; value: string };
+
 // GET /api/cards/next?n=5&exclude=<id>,<id>
 // The next cards for this user (rule 4: the server decides what's next).
 // `exclude` lists cards the phone already has queued. Responses carry public
-// profile fields only (D9).
+// profile fields only (D9); hidden attributes steer selection and matching
+// here and never leave the server.
 export async function GET(request: Request) {
   const userId = await getCurrentUserId();
   if (!userId) {
@@ -35,20 +45,38 @@ export async function GET(request: Request) {
     deckItemIds = (data as { id: string }[]).map((r) => r.id);
   }
 
-  const { data: log, error: logError } = await db
-    .from("events")
-    .select("id, type, item_id, payload")
-    .eq("user_id", userId)
-    .in("type", ["swipe", "rewind"]);
-  if (logError) throw new Error(`load swipes: ${logError.message}`);
+  const attributeKeys = ["pickiness", ...(deck.config.balance_by ? [deck.config.balance_by] : [])];
+  const [log, attributes] = await Promise.all([
+    db
+      .from("events")
+      .select("id, type, item_id, payload")
+      .eq("user_id", userId)
+      .in("type", ["swipe", "rewind"]),
+    db
+      .from("item_attributes")
+      .select("item_id, key, value")
+      .in("key", attributeKeys)
+      .in("item_id", deckItemIds),
+  ]);
+  if (log.error) throw new Error(`load swipes: ${log.error.message}`);
+  if (attributes.error) throw new Error(`load attributes: ${attributes.error.message}`);
 
-  const ordered = orderDeck(deckItemIds, userId, deck.config.order ?? "shuffle");
-  const swiped = swipedItemIds(log as SwipeLogEntry[]);
+  const attrRows = attributes.data as AttributeRow[];
+  const groups = deck.config.balance_by
+    ? new Map(attrRows.filter((a) => a.key === deck.config.balance_by).map((a) => [a.item_id, a.value]))
+    : undefined;
+  const pickiness = new Map(
+    attrRows.filter((a) => a.key === "pickiness").map((a) => [a.item_id, Number(a.value)]),
+  );
+
+  const mine = selectForUser(deckItemIds, userId, deck.config.size, groups);
+  const ordered = orderDeck(mine, userId, deck.config.order ?? "shuffle");
+  const swiped = swipedItemIds(log.data as SwipeLogEntry[]);
   const ids = nextItemIds(ordered, swiped, exclude, n);
   const remaining = ordered.filter((id) => !swiped.has(id)).length;
 
   if (ids.length === 0) {
-    return Response.json({ cards: [], remaining }, { headers: noStore });
+    return Response.json({ cards: [], remaining, deckSize: ordered.length }, { headers: noStore });
   }
 
   const [items, photos] = await Promise.all([
@@ -66,7 +94,9 @@ export async function GET(request: Request) {
   const cards = ids
     .map((id) => byId.get(id))
     .filter((i): i is ItemRow => !!i)
-    .map((i) => toCard(i, photos.data as PhotoRow[], supabaseUrl));
+    .map((i) =>
+      toCard(i, photos.data as PhotoRow[], supabaseUrl, matchesOnLike(userId, i.id, pickiness.get(i.id))),
+    );
 
-  return Response.json({ cards, remaining }, { headers: noStore });
+  return Response.json({ cards, remaining, deckSize: ordered.length }, { headers: noStore });
 }

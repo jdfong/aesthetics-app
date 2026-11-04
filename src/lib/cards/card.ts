@@ -17,6 +17,8 @@ export type Card = {
   version: number;
   profile: PublicProfile;
   photos: CardPhoto[];
+  // Whether liking this card produces a match. Decided on the server (D22).
+  matchOnLike: boolean;
 };
 
 export type ItemRow = { id: string; version: number; profile: unknown };
@@ -37,7 +39,12 @@ export function photoUrl(supabaseUrl: string, storagePath: string): string {
   return `${supabaseUrl}/storage/v1/object/public/${PHOTO_BUCKET}/${path}`;
 }
 
-export function toCard(item: ItemRow, photos: PhotoRow[], supabaseUrl: string): Card {
+export function toCard(
+  item: ItemRow,
+  photos: PhotoRow[],
+  supabaseUrl: string,
+  matchOnLike: boolean,
+): Card {
   return {
     id: item.id,
     version: item.version,
@@ -52,5 +59,6 @@ export function toCard(item: ItemRow, photos: PhotoRow[], supabaseUrl: string): 
         height: p.height,
         alt: p.alt_text,
       })),
+    matchOnLike,
   };
 }

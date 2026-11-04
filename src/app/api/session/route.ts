@@ -64,8 +64,18 @@ export async function POST(request: Request) {
       .single();
     if (error) throw new Error(`insert session: ${error.message}`);
 
+    // Onboarding shows once per user (docs/06), derived from the log.
+    const { count, error: countError } = isNew
+      ? { count: 0, error: null }
+      : await supabaseAdmin()
+          .from("events")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("type", "onboarding_completed");
+    if (countError) throw new Error(`check onboarding: ${countError.message}`);
+
     return Response.json(
-      { userId, isNew, sessionId: (session as { id: string }).id },
+      { userId, isNew, sessionId: (session as { id: string }).id, onboarded: (count ?? 0) > 0 },
       { headers: noStore },
     );
   } catch (err) {

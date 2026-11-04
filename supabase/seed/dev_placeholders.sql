@@ -19,5 +19,5 @@ from public.items where slug like 'placeholder-%'
 on conflict (item_id, key) do nothing;
 
 insert into public.decks (name, config, is_active)
-select 'default', '{"order": "shuffle"}', true
+select 'default', '{"order": "shuffle", "size": 20, "balance_by": "style"}', true
 where not exists (select 1 from public.decks where is_active);
